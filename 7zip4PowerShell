@@ -1,0 +1,10 @@
+##### BEFORE RUNNING BELOW SCRIPT, ADD THE 7Zip4PowerShell Module to your powershell ######
+$SourceFileName = "C:\Users\samsarm\Downloads"
+$7za_exe = "C:\Program Files\7-Zip\7z.exe"
+$date = (Get-Date).ToString('d-M-y-HH-MM')
+$DestinationLocation = "C:\Users\samsarm\Downloads\"
+$Archives = "sample_test_$date.7z"
+#### The below will generate a random password to be used everytime while can be saved in a file ####
+$Password = [system.web.security.membership]::GeneratePassword(8,3)
+$Password > "C:\Users\samsarm\Downloads\password_$date.txt"
+Compress-7Zip -Path . -Filter *.hpi -ArchiveFileName "$Archives" -Password "$Password"
