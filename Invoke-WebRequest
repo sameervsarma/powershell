@@ -1,0 +1,66 @@
+param(
+[string]$Envs,
+[string]$Apps,
+[string]$JobsToBuild,
+[string]$PARAMETER2
+)
+
+Write-Host $Envs
+Write-Host $Apps
+Write-Host $JobsToBuild
+Write-Host $Label
+
+Function global:SCP_T2_RC_Project{
+$JobURL = "http://localhost:8080/job/GetOne_Portals/job/SCP_T2_RC_Project_Test"
+$user = 'admin'
+$pass = '26b971aea1fe13d663f807414664fb88'
+$pair = "$($user):$($pass)"
+$encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+$basicAuthValue = "Basic $encodedCreds"
+$Headers = @{
+     Authorization = $basicAuthValue
+}
+
+Invoke-WebRequest -Uri "$JobURL/buildWithParameters?Parameter1=1.2.4&Parameter2=$PARAMETER2" -Headers $Headers -method POST
+}
+
+Function global:SCP_Code_Build{
+$JobURL = "$JENKINS_URL/job/SCP_Code_Build/"
+$user = 'admin'
+$pass = 'API_PASSWORD'
+$pair = "$($user):$($pass)"
+$encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+$basicAuthValue = "Basic $encodedCreds"
+$Headers = @{
+     Authorization = $basicAuthValue
+}
+Invoke-WebRequest -Uri "$JobURL/buildWithParameters?Project_Version=1.2.4&Label=$Label" -Headers $Headers -method POST
+}
+
+Function global:BPMGMNT_PROJ_IIB10_T2_BRANCH{
+$JobURL = "$JENKINS_URL/job/BPMGMNT_PROJECT_IIB10_T2_BRANCH/"
+$user = 'admin'
+$pass = '26b971aea1fe13d663f807414664fb88'
+$pair = "$($user):$($pass)"
+$encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+$basicAuthValue = "Basic $encodedCreds"
+$Headers = @{
+     Authorization = $basicAuthValue
+}
+Invoke-WebRequest -Uri "$JobURL/buildWithParameters?Project_Version=1.2.4&Label=$Label" -Headers $Headers -method POST
+}
+
+$testing_options_final = $JobsToBuild.split(",");
+foreach($l in $testing_options_final){
+if("$l" -eq "BPMGMNT_PROJ_IIB10_T2_BRANCH"){
+Write-Output "This is calling BPMGMNT_PROJ_IIB10_T2_BRANCH"
+BPMGMNT_PROJ_IIB10_T2_BRANCH
+}
+elseif("$l" -eq "SCP_Code_Build"){
+Write-Output "This is calling SCP_Code_Build"
+SCP_Code_Build
+}
+else{
+Write-Warning  "This is wrong input"
+}
+}
