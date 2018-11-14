@@ -1,0 +1,9 @@
+$location = "C:\Users\sameervsarma"
+cd $location
+$date = (Get-Date).ToString('d-M-y-HH-MM')
+Get-ChildItem -Name -Exclude *.* >> $location\Package_list_$date
+
+ForEach ($system in Get-Content "$location\Package_list_$date")
+{
+Get-Content package.json | Out-String | ConvertFrom-Json | Select variable1, variable2 >> $location\Result
+}
